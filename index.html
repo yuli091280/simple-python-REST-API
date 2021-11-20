@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset=utf-8>
+	<title>simple mood api</title>
+</head>
+<body>
+	<form>
+		<label for='username'>username:</label><br>
+		<input type=text id=username name=username><br>
+		<label for=password>password:</label><br>
+		<input type=password id=password name=password><br>
+		<input type=button value=login id=login>
+	</form>
+	
+	<script>
+		document.getElementById('login').addEventListener('click',() => {
+			username = document.getElementById('username').value;
+			password = document.getElementById('password').value;
+			data = {'username':username, 'password':password}
+			opts = {
+				headers: {
+					'content-type': 'application/json; charset=utf-8'
+				},
+				body: JSON.stringify(data),
+				method: "POST"
+			};
+			fetch('/login',opts).then(data=>(console.log()))
+		});
+	</script>
+</body>

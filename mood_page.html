@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset=utf-8>
+	<title>simple mood api</title>
+</head>
+<body>
+	<form>
+		<label for='new_mood'>submit a new mood</label><br>
+		<input type=text id=new_mood name=new_mood><br>
+		<label for='date'>enter date</label><br>
+		<input type=date id=date name=date><br>
+		<input type=button id=submit value=submit>
+	</form>
+	
+	<script>
+		document.getElementById('submit').addEventListener('click',() => {
+			mood = document.getElementById('new_mood').value;
+			date = document.getElementById('date').value;
+			data = {'mood':mood, 'date':date};
+			opts = {
+				headers: {
+					'content-type': 'application/json; charset=utf-8'
+				},
+				body: JSON.stringify(data),
+				method: "POST"
+			};
+			fetch('/mood',opts).then(data=>(console.log()))
+		});
+	</script>
+</body>
