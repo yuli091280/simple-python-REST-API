@@ -60,7 +60,8 @@ class mood(object):
 		username = self.check_name()
 		if username is None:
 			raise cherrypy.HTTPError(401)
-		return database.get_user(username).get_all_moods()
+		user = database.get_user(username)
+		return user.get_moods_record()	
 			
 	@cherrypy.tools.accept(media='application/json')
 	@cherrypy.tools.json_in()
@@ -83,9 +84,11 @@ class mood(object):
 			date = datetime.datetime(y,m,d)
 		except:
 			pass
-		database.get_user(username).add_mood(date, data['mood'])
+		user = database.get_user(username)
+		user.add_mood(date, data['mood'])
 
-if __name__ == '__main__':
+def main():
+	global database 
 	database = user_database.make_mock_database()
 	cherrypy.config.update({
 		'server.socket_port': PORT,
@@ -110,3 +113,6 @@ if __name__ == '__main__':
 	my_app.mood = mood()
 	my_app.login = login()
 	cherrypy.quickstart(app, '/', conf)
+
+if __name__ == '__main__':
+	main()

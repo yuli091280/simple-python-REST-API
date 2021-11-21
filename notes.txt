@@ -3,3 +3,9 @@ cherrypy is the framework used
 
 index and mood_page are only used for testing
 all they do is submit the correct json to the api
+
+while the api allows a date to be submitted, this is
+for testing only. As such the streak system breaks if
+a mood that was submitted has a earlier date than a
+previously submitted mood. the api defaults to today
+if a date is not submitted

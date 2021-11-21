@@ -1,6 +1,7 @@
 '''
 This entire database is bad. Don't do this in production, ever.
 '''
+import datetime
 
 class user:
 	def __init__(self, name, password):
@@ -9,8 +10,14 @@ class user:
 		self._mood_record = {}
 		
 	def add_mood(self, date, mood):
+		yesterday = date - datetime.timedelta(days=1)
+		yesterday_str = yesterday.strftime("%Y-%m-%d")
 		date_str = date.strftime("%Y-%m-%d")
-		self._mood_record[date_str] = mood
+		if yesterday_str in self._mood_record:
+			streak = self._mood_record[yesterday_str]['streak']+1
+		else:
+			streak = 1
+		self._mood_record[date_str] = {'mood':mood,'streak':streak}
 		
 	def get_mood(self, date):
 		date_str = date.strftime("%Y-%m-%d")
@@ -19,7 +26,7 @@ class user:
 	def check_password(self, password):
 		return self._password == password
 		
-	def get_all_moods(self):
+	def get_moods_record(self):
 		return self._mood_record
 		
 class database:
