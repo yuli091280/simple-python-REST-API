@@ -46,5 +46,6 @@ def make_mock_database():
 	my_database = database()
 	my_database.add_user("user1","password")
 	my_database.add_user("user2","abc123")
+	my_database.add_user("user3","qwerty")
 	return my_database
 	

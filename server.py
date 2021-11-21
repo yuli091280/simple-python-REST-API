@@ -8,7 +8,7 @@ import user_database
 ADDR = 'localhost'
 PORT = 8000
 
-class my_app(object):
+class my_api(object):
 	@cherrypy.expose
 	def index(self):
 		return open('index.html')
@@ -30,9 +30,8 @@ class login(object):
 	@cherrypy.tools.accept(media='application/json')
 	@cherrypy.tools.json_in()
 	def POST(self):
-		if not hasattr(cherrypy.request,'json'):
-			raise cherrypy.HTTPError(400)
 		data = cherrypy.request.json
+		print(data)
 		if 'username' not in data or 'password' not in data:
 			raise cherrypy.HTTPError(400)
 		username = data['username']
@@ -66,8 +65,6 @@ class mood(object):
 	@cherrypy.tools.accept(media='application/json')
 	@cherrypy.tools.json_in()
 	def POST(self):
-		if not hasattr(cherrypy.request,'json'):
-			raise cherrypy.HTTPError(400)
 		data = cherrypy.request.json
 		username = self.check_name()
 		if username is None:
@@ -87,13 +84,15 @@ class mood(object):
 		user = database.get_user(username)
 		user.add_mood(date, data['mood'])
 
-def main():
+def bind_to_socket(addr = ADDR, port=PORT): # pragma: no cover
+	cherrypy.config.update({
+		'server.socket_port': port,
+		'server._socket_host': addr
+	})
+
+def server_setup():
 	global database 
 	database = user_database.make_mock_database()
-	cherrypy.config.update({
-		'server.socket_port': PORT,
-		'server._socket_host': ADDR
-	})
 	conf = {
 		'/': {
 			'tools.sessions.on': True,
@@ -109,10 +108,15 @@ def main():
 			'tools.response_headers.headers': [('Content-Type', 'application/json')]
 		}
 	}
-	app = my_app()
-	my_app.mood = mood()
-	my_app.login = login()
-	cherrypy.quickstart(app, '/', conf)
+	api = my_api()
+	my_api.mood = mood()
+	my_api.login = login()
+	return api, conf
+	
+def main(): # pragma: no cover
+	bind_to_socket()
+	api, conf = server_setup()
+	cherrypy.quickstart(api, '/', conf)
 
-if __name__ == '__main__':
+if __name__ == '__main__': # pragma: no cover
 	main()

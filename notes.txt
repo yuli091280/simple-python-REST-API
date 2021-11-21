@@ -9,3 +9,6 @@ for testing only. As such the streak system breaks if
 a mood that was submitted has a earlier date than a
 previously submitted mood. the api defaults to today
 if a date is not submitted
+
+pytest is used for both unit test and coverage
+pytest and pytest-cov may need to be installed
