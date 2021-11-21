@@ -5,7 +5,7 @@ This entire database is bad. Don't do this in production, ever.
 class user:
 	def __init__(self, name, password):
 		self._name = name
-		self._password = password
+		self._password = password	# storing pw in plaintext is bad
 		self._mood_record = {}
 		
 	def add_mood(self, date, mood):
@@ -24,13 +24,16 @@ class user:
 		
 class database:
 	def __init__(self):
-		self.users = {}
+		self._users = {}
 		
 	def add_user(self,username,password):
-		self.users[username] = user(username, password)
+		self._users[username] = user(username, password)
 		
-	def add_mood(self, username, date, mood):
-		self.users[username].add_mood(date, mood)
+	def get_user(self, username):
+		if username in self._users:
+			return self._users[username]
+		else:
+			return None
 		
 def make_mock_database():
 	my_database = database()

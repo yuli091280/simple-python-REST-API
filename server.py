@@ -15,10 +15,7 @@ class my_app(object):
 	
 	@cherrypy.expose
 	def mood_page(self):
-		if 'name' in cherrypy.session:
-			return open('mood_page.html')
-		else:
-			raise cherrypy.HTTPError(401)
+		return open('mood_page.html')
 	
 	@cherrypy.expose
 	def logout(self):
@@ -40,7 +37,8 @@ class login(object):
 			raise cherrypy.HTTPError(400)
 		username = data['username']
 		password = data['password']
-		if username in database.users and database.users[username].check_password(password):
+		user = database.get_user(username)
+		if user is not None and user.check_password(password):
 			cherrypy.session['name'] = username
 		else:
 			raise cherrypy.HTTPError(
@@ -62,7 +60,7 @@ class mood(object):
 		username = self.check_name()
 		if username is None:
 			raise cherrypy.HTTPError(401)
-		return database.users[username].get_all_moods()
+		return database.get_user(username).get_all_moods()
 			
 	@cherrypy.tools.accept(media='application/json')
 	@cherrypy.tools.json_in()
@@ -85,7 +83,7 @@ class mood(object):
 			date = datetime.datetime(y,m,d)
 		except:
 			pass
-		database.users[username].add_mood(date, data['mood'])
+		database.get_user(username).add_mood(date, data['mood'])
 
 if __name__ == '__main__':
 	database = user_database.make_mock_database()
