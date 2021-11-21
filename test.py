@@ -175,3 +175,38 @@ class test(helper.CPWebCase):
 			}
 		})
 		self.assertBody(expected)
+		
+	def test_mood_streak_connect(self):
+		s_id = self.login()
+		jsonStr = json.dumps({'mood': 'fine','date':'1970-1-6'})
+		self.postJson('/mood', jsonStr, s_id)
+		jsonStr = json.dumps({'mood': 'acceptable','date':'1970-1-4'})
+		self.postJson('/mood', jsonStr, s_id)
+		self.getPageWithSessionId('/mood', s_id)
+		expected = json.dumps({
+			'1970-01-01': {
+				'mood':['good enough'],
+				'streak':1
+			},
+			'1970-01-02': {
+				'mood': ['terrible'],
+				'streak':2
+			},
+			'1970-01-03': {
+				'mood':['meh'],
+				'streak':3
+			},
+			'1970-01-05': {
+				'mood':['terrific'],
+				'streak':5
+			},
+			'1970-01-06': {
+				'mood':['fine'],
+				'streak':6
+			},
+			'1970-01-04': {
+				'mood': ['acceptable'],
+				'streak':4
+			}
+		})
+		self.assertBody(expected)

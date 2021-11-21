@@ -17,6 +17,7 @@ class user:
 			streak = self._mood_record[yesterday_str]['streak']+1
 		else:
 			streak = 1
+		self._update_streak(date, streak)
 		if date_str in self._mood_record:
 			today = self._mood_record[date_str]
 			try:
@@ -37,6 +38,15 @@ class user:
 	def get_moods_record(self):
 		return self._mood_record
 		
+	def _update_streak(self, date, streak):
+		tomorrow = date + datetime.timedelta(days=1)
+		tomorrow_str = tomorrow.strftime("%Y-%m-%d")
+		while tomorrow_str in self._mood_record:
+			streak += 1
+			self._mood_record[tomorrow_str]['streak'] = streak
+			tomorrow = tomorrow + datetime.timedelta(days=1)
+			tomorrow_str = tomorrow.strftime("%Y-%m-%d")
+
 class database:
 	def __init__(self):
 		self._users = {}
