@@ -17,8 +17,16 @@ class user:
 			streak = self._mood_record[yesterday_str]['streak']+1
 		else:
 			streak = 1
-		self._mood_record[date_str] = {'mood':mood,'streak':streak}
-		
+		if date_str in self._mood_record:
+			today = self._mood_record[date_str]
+			try:
+				today['mood'].index(mood)
+			except:
+				today['mood'].append(mood)
+			today['streak'] = streak
+		else:
+			self._mood_record[date_str] = {'mood': [mood], 'streak':streak}
+			
 	def get_mood(self, date):
 		date_str = date.strftime("%Y-%m-%d")
 		return self._mood_record[date_str]

@@ -109,7 +109,7 @@ class test(helper.CPWebCase):
 		jsonStr = json.dumps({'mood': 'good enough','date':'1970-1-1'})
 		self.postJson('/mood', jsonStr, s_id)
 		self.getPageWithSessionId('/mood', s_id)
-		expected = json.dumps({'1970-01-01':{'mood':'good enough','streak':1}})
+		expected = json.dumps({'1970-01-01':{'mood':['good enough'],'streak':1}})
 		self.assertBody(expected)
 		
 	def test_mood_no_date(self):
@@ -120,7 +120,7 @@ class test(helper.CPWebCase):
 		today = datetime.datetime.now().strftime('%Y-%m-%d')
 		expected = json.dumps({
 			today: {
-				'mood': 'good enough',
+				'mood':['good enough'],
 				'streak': 1
 			}
 		})
@@ -130,16 +130,18 @@ class test(helper.CPWebCase):
 		s_id = self.login_user2()
 		jsonStr = json.dumps({'mood': 'good enough','date':'1970-1-1'})
 		self.postJson('/mood', jsonStr, s_id)
+		jsonStr = json.dumps({'mood': 'bad','date':'1970-1-1'})
+		self.postJson('/mood', jsonStr, s_id)
 		jsonStr = json.dumps({'mood': 'meh','date':'1970-1-2'})
 		self.postJson('/mood', jsonStr, s_id)
 		self.getPageWithSessionId('/mood', s_id)
 		expected = json.dumps({
 			'1970-01-01': {
-				'mood':'good enough',
+				'mood':['good enough','bad'],
 				'streak':1
 			},
 			'1970-01-02': {
-				'mood': 'meh',
+				'mood': ['meh'],
 				'streak':2
 			}
 		})
@@ -156,19 +158,19 @@ class test(helper.CPWebCase):
 		self.getPageWithSessionId('/mood', s_id)
 		expected = json.dumps({
 			'1970-01-01': {
-				'mood':'good enough',
+				'mood':['good enough'],
 				'streak':1
 			},
 			'1970-01-02': {
-				'mood': 'terrible',
+				'mood': ['terrible'],
 				'streak':2
 			},
 			'1970-01-03': {
-				'mood':'meh',
+				'mood':['meh'],
 				'streak':3
 			},
 			'1970-01-05': {
-				'mood':'terrific',
+				'mood':['terrific'],
 				'streak':1
 			}
 		})
