@@ -67,15 +67,19 @@ class mood(object):
 		if username is None:
 			raise cherrypy.HTTPError(401)
 		user = database.get_user(username)
+		date = None
 		try:
 			tokens = date_str.split('-')
 			y = int(tokens[0])
 			m = int(tokens[1])
 			d = int(tokens[2])
 			date = datetime.datetime(y,m,d)
-			return user.get_mood(date)
 		except:
 			return user.get_moods_record()
+		moods = user.get_mood(date)
+		if moods is None:
+			raise cherrypy.HTTPError(404)
+		return moods
 			
 	@cherrypy.tools.accept(media='application/json')
 	@cherrypy.tools.json_in()

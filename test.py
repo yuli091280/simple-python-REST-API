@@ -111,6 +111,8 @@ class test(helper.CPWebCase):
 			'streak':1
 		})
 		self.assertBody(expected)
+		self.getPageWithSessionId('/mood/1970-1-9', s_id)
+		self.assertStatus(404)
 		
 	def test_mood_post_bad_format(self):
 		s_id = self.login()

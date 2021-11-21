@@ -4,11 +4,26 @@ cherrypy is the framework used
 index and mood_page are only used for testing
 all they do is submit the correct json to the api
 
-while the api allows a date to be submitted, this is
-for testing only. As such the streak system breaks if
-a mood that was submitted has a earlier date than a
-previously submitted mood. the api defaults to today
-if a date is not submitted
+py server.py		to run server
+py client.py		for a simple test
+pytest -s test.py	for pytest unit test
+
+The api allows a date to be specified when submitting mood, defaults to today if a date is not submitted
+The api allows a date to be specified when getting mood, defaults to all days if no date is specified
+
+specify date by /mood/(date)
+(date) must be in the format of YYYY-MM-DD
+
+when POST to /mood, json must be in the format of
+{'mood':(mood)}
+(mood) can be any string
 
 pytest is used for both unit test and coverage
 pytest and pytest-cov may need to be installed
+
+when date is malformed for /mood:
+POST: defaults to today
+GET: returns moods json as if there were no dates specified
+
+when a specified date does not exist for /mood:
+GET: returns 404

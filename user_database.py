@@ -30,7 +30,10 @@ class user:
 			
 	def get_mood(self, date):
 		date_str = date.strftime("%Y-%m-%d")
-		return self._mood_record[date_str]
+		if date_str in self._mood_record:
+			return self._mood_record[date_str]
+		else:
+			return None
 		
 	def check_password(self, password):
 		return self._password == password

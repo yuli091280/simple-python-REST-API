@@ -17,15 +17,14 @@
 		document.getElementById('submit').addEventListener('click',() => {
 			mood = document.getElementById('new_mood').value;
 			date = document.getElementById('date').value;
-			data = {'mood':mood, 'date':date};
 			opts = {
 				headers: {
 					'content-type': 'application/json; charset=utf-8'
 				},
-				body: JSON.stringify(data),
+				body: JSON.stringify({'mood':mood}),
 				method: "POST"
 			};
-			fetch('/mood',opts).then(data=>(console.log()))
+			fetch('/mood/'+date,opts).then(data=>(console.log()))
 		});
 	</script>
 </body>
