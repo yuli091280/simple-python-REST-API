@@ -53,18 +53,33 @@ class mood(object):
 		else:
 			return None
 
+	def _cp_dispatch(self, vpath):
+		print(vpath)
+		if len(vpath) == 1:
+			date = vpath.pop()
+		cherrypy.request.params['date_str'] = date
+		return self
+
 	@cherrypy.tools.accept(media='application/json')
 	@cherrypy.tools.json_out()
-	def GET(self):
+	def GET(self, date_str=""):
 		username = self.check_name()
 		if username is None:
 			raise cherrypy.HTTPError(401)
 		user = database.get_user(username)
-		return user.get_moods_record()	
+		try:
+			tokens = date_str.split('-')
+			y = int(tokens[0])
+			m = int(tokens[1])
+			d = int(tokens[2])
+			date = datetime.datetime(y,m,d)
+			return user.get_mood(date)
+		except:
+			return user.get_moods_record()
 			
 	@cherrypy.tools.accept(media='application/json')
 	@cherrypy.tools.json_in()
-	def POST(self):
+	def POST(self, date_str=""):
 		data = cherrypy.request.json
 		username = self.check_name()
 		if username is None:
@@ -72,9 +87,8 @@ class mood(object):
 		if 'mood' not in data:
 			raise cherrypy.HTTPError(400)
 		date = datetime.datetime.now()
-		print(data)
 		try:
-			tokens = data['date'].split('-')
+			tokens = date_str.split('-')
 			y = int(tokens[0])
 			m = int(tokens[1])
 			d = int(tokens[2])
