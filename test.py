@@ -34,11 +34,7 @@ class test(helper.CPWebCase):
 	
 	def test_index(self):
 		self.getPage("/")
-		self.assertStatus(200)
-		
-	def test_mood_page(self):
-		self.getPage("/mood_page")
-		self.assertStatus(200)
+		self.assertStatus(404)
 		
 	def test_login_bad_credential(self):
 		jsonStr = json.dumps({'username':'user','password':1})

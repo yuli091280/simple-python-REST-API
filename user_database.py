@@ -1,5 +1,5 @@
 '''
-This entire database is bad. Don't do this in production, ever.
+This entire database is bad.
 '''
 import datetime
 

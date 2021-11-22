@@ -24,7 +24,7 @@
 				body: JSON.stringify({'mood':mood}),
 				method: "POST"
 			};
-			fetch('/mood/'+date,opts).then(data=>(console.log()))
+			fetch('/mood/'+date,opts).then(data=>(console.log(data)))
 		});
 	</script>
 </body>

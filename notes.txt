@@ -1,10 +1,31 @@
-requests may need to be installed
 cherrypy is the framework used
 
-index and mood_page are only used for testing
-all they do is submit the correct request to the api
-pip -install cherrypy	to install cherrypy
+pip install cherrypy	to install cherrypy
 py server.py		to run server
+
+index.html and mood_page.html are only used for testing
+all they do is submit the correct request to the api
+
+The api currently has 3 endpoints, /login /logout /mood
+All communication with the api is done in json
+
+a user may login by POSTing to /login the following json:
+{
+	'username': (username)
+	'password': (password)
+}
+All other entries will be ignored, and the server returns 400 should either of these entries be missing
+server returns 401 when authentication fails
+premade users:
+username: user1
+password: password
+username: user2
+password: abc123
+username: user3
+password: qwerty
+
+a user may logout by requesting /logout with any method
+server returns 401 if the current user is not logged in
 
 The api allows a date to be specified when submitting mood, defaults to today if a date is not submitted
 The api allows a date to be specified when getting mood, defaults to all days if no date is specified
@@ -26,18 +47,32 @@ server returns 400 if 'mood' is not in json
 GET /mood should expect json with this structure:
 {
 	(date) {
-		mood: [moods]
+		mood: [moods],
 		streak: some int
-	}
+	},
+	(another date) {
+		mood: [moods],
+		streak: some int
 }
-where (date) is the date in string, [moods] is a list of moods for that day
+where the dates will be strings in the format of YYYY-MM-DD, [moods] is a list of moods for that day
 if GET /mood/(date), expect the following
 {
 	mood: [moods]
 	streak: some int
 }
 
+The most obvious problem with this project as it is now is the fact that it stores all user info in memory.
+For a prouduction app anything stored inside user_database should instead be stored in a sql database.
+I also did not bother to implement https, which is definitely a necessity should this gets deployed.
+There are also several config changes that need to be made when deploying this api.
+Such as not letting cherrypy emit stacktrace on error amoung other things.
+I might also add support for xml if this were to become production.
+
+
 pytest is used for both unit test and coverage
 pytest and pytest-cov may need to be installed
-run pip -install pytest 	to install pytest
+run pip install pytest 		to install pytest
+run pip install pytest-cov	to install pytest-cov
 run pytest -s -v test.py 	for test cases
+
+client.py is a simple tester before pytest was in place

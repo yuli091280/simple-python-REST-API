@@ -9,19 +9,23 @@ ADDR = 'localhost'
 PORT = 8000
 
 class my_api(object):
+	# uncomment these to use index and mood_page for testing
+	# some test will fail if these are uncommented, that's expected
+	# the api should still function normally
+	'''
 	@cherrypy.expose
 	def index(self):
-		return open('index.html')
-	
+		return open('index.html','r')
+		
 	@cherrypy.expose
 	def mood_page(self):
-		return open('mood_page.html')
-	
+		return open('mood_page.html', 'r')
+	'''
+
 	@cherrypy.expose
 	def logout(self):
 		if 'name' in cherrypy.session:
 			cherrypy.session.pop('name')
-			return 'logged out'
 		else:
 			raise cherrypy.HTTPError(401)
 
@@ -31,19 +35,16 @@ class login(object):
 	@cherrypy.tools.json_in()
 	def POST(self):
 		data = cherrypy.request.json
-		print(data)
 		if 'username' not in data or 'password' not in data:
-			raise cherrypy.HTTPError(400)
+			cherrypy.response.status = 400
+			return
 		username = data['username']
 		password = data['password']
 		user = database.get_user(username)
 		if user is not None and user.check_password(password):
 			cherrypy.session['name'] = username
 		else:
-			raise cherrypy.HTTPError(
-				401,
-				'invalid username or password'
-			)
+			cherrypy.response.status = 401
 
 @cherrypy.expose
 class mood(object):
@@ -61,7 +62,6 @@ class mood(object):
 		return datetime.datetime(y,m,d)
 
 	def _cp_dispatch(self, vpath):
-		print(vpath)
 		if len(vpath) == 1:
 			date = vpath.pop()
 			cherrypy.request.params['date_str'] = date
@@ -74,17 +74,20 @@ class mood(object):
 	def GET(self, date_str="", other=None):
 		username = self.check_name()
 		if username is None:
-			raise cherrypy.HTTPError(401)
+			cherrypy.response.status = 401
+			return
 		user = database.get_user(username)
 		if date_str == "":
 			return user.get_moods_record()
 		try:
 			date = self.parse_date(date_str)
 		except:
-			raise cherrypy.HTTPError(404)
+			cherrypy.response.status = 404
+			return
 		moods = user.get_mood(date)
 		if moods is None:
-			raise cherrypy.HTTPError(404)
+			cherrypy.response.status = 404
+			return
 		return moods
 			
 	@cherrypy.tools.accept(media='application/json')
@@ -93,16 +96,19 @@ class mood(object):
 		data = cherrypy.request.json
 		username = self.check_name()
 		if username is None:
-			raise cherrypy.HTTPError(401)
+			cherrypy.response.status = 401
+			return
 		if 'mood' not in data:
-			raise cherrypy.HTTPError(400)
+			cherrypy.response.status = 400
+			return
 		if date_str == '':
 			date = datetime.datetime.now()
 		else:
 			try:
 				date = self.parse_date(date_str)
 			except:
-				raise cherrypy.HTTPError(404)
+				cherrypy.response.status = 404
+				return
 		user = database.get_user(username)
 		user.add_mood(date, data['mood'])
 
