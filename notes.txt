@@ -67,7 +67,9 @@ I also did not bother to implement https, which is definitely a necessity should
 There are also several config changes that need to be made when deploying this api.
 Such as not letting cherrypy emit stacktrace on error amoung other things.
 I might also add support for xml if this were to become production.
-
+There are of course other security related considerations 
+examples are storing hashes of passwords instead of plain text.
+sanitizing inputs against injection attacks
 
 pytest is used for both unit test and coverage
 pytest and pytest-cov may need to be installed
