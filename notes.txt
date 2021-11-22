@@ -2,28 +2,42 @@ requests may need to be installed
 cherrypy is the framework used
 
 index and mood_page are only used for testing
-all they do is submit the correct json to the api
-
+all they do is submit the correct request to the api
+pip -install cherrypy	to install cherrypy
 py server.py		to run server
-py client.py		for a simple test
-pytest -s test.py	for pytest unit test
 
 The api allows a date to be specified when submitting mood, defaults to today if a date is not submitted
 The api allows a date to be specified when getting mood, defaults to all days if no date is specified
 
 specify date by /mood/(date)
 (date) must be in the format of YYYY-MM-DD
+returns 404 if date is invalid, request is malformed, or date not found
+
+when interacting with /mood, a session id must be provided as a cookie
+the server will provide the cookie the first time anything is requested
+/mood will return 401 if no id is provided or if the session indicated by the id is not a logged in user
 
 when POST to /mood, json must be in the format of
 {'mood':(mood)}
 (mood) can be any string
+additional entries beyond 'mood' will be ignored
+server returns 400 if 'mood' is not in json
+
+GET /mood should expect json with this structure:
+{
+	(date) {
+		mood: [moods]
+		streak: some int
+	}
+}
+where (date) is the date in string, [moods] is a list of moods for that day
+if GET /mood/(date), expect the following
+{
+	mood: [moods]
+	streak: some int
+}
 
 pytest is used for both unit test and coverage
 pytest and pytest-cov may need to be installed
-
-when date is malformed for /mood:
-POST: defaults to today
-GET: returns moods json as if there were no dates specified
-
-when a specified date does not exist for /mood:
-GET: returns 404
+run pip -install pytest 	to install pytest
+run pytest -s -v test.py 	for test cases

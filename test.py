@@ -114,6 +114,15 @@ class test(helper.CPWebCase):
 		self.getPageWithSessionId('/mood/1970-1-9', s_id)
 		self.assertStatus(404)
 		
+	def test_mood_get_route_incorrect(self):
+		s_id = self.login()
+		self.getPageWithSessionId('/mood/1970-1-1/1', s_id)
+		self.assertStatus(404)
+		self.getPageWithSessionId('/mood/1970-1-', s_id)
+		self.assertStatus(404)
+		self.getPageWithSessionId('/mood/aaaaa', s_id)
+		self.assertStatus(404)
+		
 	def test_mood_post_bad_format(self):
 		s_id = self.login()
 		jsonStr = json.dumps({'stuff':'bad mood'})
@@ -132,6 +141,16 @@ class test(helper.CPWebCase):
 		self.getPageWithSessionId('/mood', s_id)
 		expected = json.dumps({'1970-01-01':{'mood':['good enough'],'streak':1}})
 		self.assertBody(expected)
+		
+	def test_mood_post_route_incorrect(self):
+		s_id = self.login()
+		jsonStr = json.dumps({'mood': 'good enough'})
+		self.postJson('/mood/1970-1-1/1', jsonStr, s_id)
+		self.assertStatus(404)
+		self.postJson('/mood/1970-1-', jsonStr, s_id)
+		self.assertStatus(404)
+		self.postJson('/mood/aaaaa', jsonStr, s_id)
+		self.assertStatus(404)
 		
 	def test_mood_no_date(self):
 		s_id = self.login_user3()

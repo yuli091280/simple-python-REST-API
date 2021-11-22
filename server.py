@@ -53,29 +53,35 @@ class mood(object):
 		else:
 			return None
 
+	def parse_date(self, date_str):
+		tokens = date_str.split('-')
+		y = int(tokens[0])
+		m = int(tokens[1])
+		d = int(tokens[2])
+		return datetime.datetime(y,m,d)
+
 	def _cp_dispatch(self, vpath):
 		print(vpath)
 		if len(vpath) == 1:
 			date = vpath.pop()
-		cherrypy.request.params['date_str'] = date
+			cherrypy.request.params['date_str'] = date
+		elif len(vpath) > 1:
+			cherrypy.request.params['date_str'] = 'a'
 		return self
 
 	@cherrypy.tools.accept(media='application/json')
 	@cherrypy.tools.json_out()
-	def GET(self, date_str=""):
+	def GET(self, date_str="", other=None):
 		username = self.check_name()
 		if username is None:
 			raise cherrypy.HTTPError(401)
 		user = database.get_user(username)
-		date = None
-		try:
-			tokens = date_str.split('-')
-			y = int(tokens[0])
-			m = int(tokens[1])
-			d = int(tokens[2])
-			date = datetime.datetime(y,m,d)
-		except:
+		if date_str == "":
 			return user.get_moods_record()
+		try:
+			date = self.parse_date(date_str)
+		except:
+			raise cherrypy.HTTPError(404)
 		moods = user.get_mood(date)
 		if moods is None:
 			raise cherrypy.HTTPError(404)
@@ -90,15 +96,13 @@ class mood(object):
 			raise cherrypy.HTTPError(401)
 		if 'mood' not in data:
 			raise cherrypy.HTTPError(400)
-		date = datetime.datetime.now()
-		try:
-			tokens = date_str.split('-')
-			y = int(tokens[0])
-			m = int(tokens[1])
-			d = int(tokens[2])
-			date = datetime.datetime(y,m,d)
-		except:
-			pass
+		if date_str == '':
+			date = datetime.datetime.now()
+		else:
+			try:
+				date = self.parse_date(date_str)
+			except:
+				raise cherrypy.HTTPError(404)
 		user = database.get_user(username)
 		user.add_mood(date, data['mood'])
 
